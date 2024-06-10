@@ -1,0 +1,46 @@
+{% extends "system_template.html" %}
+{% block content %}
+<div class="content_area d-flex flex-column align-items-center no-select no-right-click">
+  <h2>そのあと、あなたはスペースバーを6回連続で押すように指示されましたが、そのことを忘れてしまうと言われました。</h2>
+  <p>スペースキーを押したいという衝動がどの程度あったか、0から5までの尺度でお答えください。0は衝動が全くないことを意味し、5はスペースキーを何度も押したいという明確な衝動があったことを表します。</p>
+</div>
+
+<div class="form_area d-flex flex-column align-items-center">
+  <form action="/process" method="post" id="form" novalidate>
+
+    <div class="custom_paragraph_area">
+      <h2 class="no-select no-right-click">あなたの体験に対応する数字を選択してください</h2>
+      <div class="rating-buttons mt-3 mb-3 d-flex justify-content-center">
+        <span class="mt-2 no-select no-right-click">衝動はなかった</span>
+        <button type="button" class="rating-btn" data-value="0">0</button>
+        <button type="button" class="rating-btn" data-value="1">1</button>
+        <button type="button" class="rating-btn" data-value="2">2</button>
+        <button type="button" class="rating-btn" data-value="3">3</button>
+        <button type="button" class="rating-btn" data-value="4">4</button>
+        <button type="button" class="rating-btn" data-value="5">5</button>
+        <span class="mt-2 no-select no-right-click">明確な衝動があった</span>
+      </div>
+      <input type="hidden" name="Q11" id="answer" required>
+    </div>
+
+    <div class="custom_paragraph_area">
+      <button type="submit" class="btn btn-primary btn-lg custom-button">次に進む</button>
+      <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
+    </div>
+
+  </form>
+</div>
+{% endblock %}
+
+
+{% block custom_end_of_body_area %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    handleRatingButtonClick('form', '.rating-btn', 'answer');
+  });
+
+  document.addEventListener('keydown', function (event) {
+    handleRatingKeydown(event, '.rating-btn', 'answer');
+  });
+</script>
+{% endblock %}

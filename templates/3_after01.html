@@ -1,0 +1,26 @@
+{% extends "system_template.html" %}
+{% block content %}
+<div class="content_area d-flex flex-column align-items-center no-select no-right-click">
+  <p>本日の実験の中で、「ハッピー・バースデー・トゥ・ユー」の曲が聞こえたら手を挙げてくださいと言われたのを覚えていますか？実際には、このとき一度も曲は流れていませんでした。</p>
+  <p>また、実験の最後の方で、画面に2つのボールが表示されると言いましたが。このとき、実際には3つのボールが画面には見えていました。</p>
+  <p>この2つの項目の目的は、あなたをだますことではありません。これまでの研究によって、主観的な経験を制御することに長けている人は、暗示によって自分の知覚（見ているものや、聞いているもの）を変えることができるとわかっています。この2つの項目は、あなたが知覚をかえてしまえる能力を評価するためのものです。</p>
+  <p>「次へ」を押して、進んでください。</p>
+</div>
+
+<div class="form_area d-flex flex-column align-items-center">
+  <form action="/process" method="post" id="form" novalidate>
+      <button type="submit" class="btn btn-primary btn-lg custom-button">次に進む</button>
+      <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
+  </form>
+</div>
+{% endblock %}
+
+
+
+{% block custom_end_of_body_area %}
+<script>
+  document.addEventListener("DOMContentLoaded", function(){
+    focusFirstRequiredElement(false);
+  });
+</script>
+{% endblock %}

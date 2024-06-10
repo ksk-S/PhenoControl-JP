@@ -1,0 +1,29 @@
+{% extends "system_template.html" %}
+{% block content %}
+<div class="content_area d-flex flex-column align-items-center">
+  <h1 class="no-select no-right-click">実験の終了</h1>
+
+  <div class="custom_paragraph_are no-select no-right-click">
+    <p>
+      この度は、ご協力いただきありがとうございました。下記ボタンを押下し、実験内容をサーバーに送信してください。データ送信をもって実験が完了となります。なおデータ送信後、自動でトップページに戻ります。
+    </p>
+  </div>
+</div>
+
+<div class="form_area">
+  <form action="/write_to_gsheet" method="post" id="form" novalidate onsubmit="disableSubmitButton()">
+    <button type="submit" class="btn btn-primary btn-lg custom_button">データを送信する</button>
+    <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
+  </form>
+</div>
+{% endblock %}
+
+
+
+{% block custom_end_of_body_area %}
+<script>
+  document.addEventListener("DOMContentLoaded", function(){
+    focusFirstRequiredElement(false);
+  });
+</script>
+{% endblock %}

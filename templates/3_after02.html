@@ -1,0 +1,44 @@
+{% extends "system_template.html" %}
+{% block content %}
+<div class="content_area d-flex flex-column align-items-center no-select no-right-click">
+  <h2>趣味や習慣についてお尋ねします。あてはまるものを選んでください。</h2>
+  <p>インターネット調査では、質問を読まずにいい加減な回答をしたり、うそをついたりする方がいることが問題となっています。大変失礼なお願いですが、あなたが文章をよく読んでいるか、確認をさせてください。次の文章について、指示にしたがって回答してください。</p>
+</div>
+
+<div class="form_area d-flex flex-column align-items-center">
+  <form action="/process" method="post" id="form" novalidate>
+      <label class="no-select no-right-click">あなたは、現在熱中している趣味はありますか？「あまりそう思わない」と「全くそう思う」の両方をクリックしてください。</label>
+      <div class="d-flex flex-column align-items-center">
+        <div class="custom_paragraph_area checkbox_list_area">
+          <div>
+            <input class="form-check-input custom_checkbox" type="checkbox" name="趣味[]" value="全くそう思わない" id="option1">
+            <label class="form-check-label" for="option1">全くそう思わない</label>
+          </div>
+          <div>
+            <input class="form-check-input custom_checkbox" type="checkbox" name="趣味[]" value="あまりそう思わない" id="option2">
+            <label class="form-check-label" for="option2">あまりそう思わない</label>
+          </div>
+          <div>
+            <input class="form-check-input custom_checkbox" type="checkbox" name="趣味[]" value="どちらでもない" id="option3">
+            <label class="form-check-label" for="option3">どちらでもない</label>
+          </div>
+          <div>
+            <input class="form-check-input custom_checkbox" type="checkbox" name="趣味[]" value="ある程度そう思う" id="option4">
+            <label class="form-check-label" for="option4">ある程度そう思う</label>
+          </div>
+          <div>
+            <input class="form-check-input custom_checkbox" type="checkbox" name="趣味[]" value="全くそう思う" id="option5">
+            <label class="form-check-label" for="option5">全くそう思う</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="custom_paragraph_area">
+        <button type="submit" class="btn btn-primary btn-lg custom-button">次に進む</button>
+        <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
+      </div>
+
+  </form>
+</div>
+{% endblock %}
+

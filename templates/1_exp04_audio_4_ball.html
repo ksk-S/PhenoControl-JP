@@ -1,0 +1,48 @@
+{% extends "system_template.html" %}
+{% block content %}
+<div class="content_area d-flex flex-column align-items-center">
+  <audio id="audio_element" autoplay>
+    <source src="/static/audio/4_hallucination_ball.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+  <img src="/static/img/three_balls_pc.png">
+</div>
+
+
+<div class="form_area d-flex flex-column align-items-center">
+  <form action="/process" method="post" id="form" novalidate>
+      {% if display_skip_button %}<button type="submit" class="btn btn-primary btn-lg custom-button"">SKIP</button>{% endif %}
+      <button type="submit" class="btn btn-primary btn-lg custom-button" style="display:none;"></button>
+      <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
+  </form>
+  <button id="play_button" class="btn btn-primary btn-lg custom-button" style="display:none;">音声を再生</button>
+</div>
+{% endblock %}
+
+
+
+{% block custom_end_of_body_area %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    autoPlayAudio('form', true);
+    {% if display_skip_button %}focusFirstRequiredElement(false);{% endif %}
+
+    /*
+    var playButton = document.getElementById('play_button');
+    var audioElement = document.getElementById('audio_element');
+    var reloaded = sessionStorage.getItem('{{ page_name }}_reloaded');
+
+
+    if (reloaded) {
+      playButton.style.display = 'block';
+    } 
+
+    playButton.addEventListener('click', function() {
+      audioElement.play();
+    });
+    */
+  });
+
+  //enableSessionStorage("{{ page_name }}");
+</script>
+{% endblock %}

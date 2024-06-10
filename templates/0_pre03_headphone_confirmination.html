@@ -1,0 +1,24 @@
+{% extends "system_template.html" %}
+{% block content %}
+<div class="content_area d-flex flex-column align-items-center">
+  <h2 class="no-select no-right-click">ヘッドホンかイヤホンをつけてから「次へ」を押して、実際の説明をお聞きください。</h2>
+</div>
+
+
+<div class="form_area d-flex flex-column align-items-center">
+  <form action="/process" method="post" id="form" novalidate>
+      <button type="submit" class="btn btn-primary btn-lg custom-button">次に進む</button>
+      <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
+  </form>
+</div>
+{% endblock %}
+
+
+
+{% block custom_end_of_body_area %}
+<script>
+  document.addEventListener("DOMContentLoaded", function(){
+    focusFirstRequiredElement(false);
+  });
+</script>
+{% endblock %}

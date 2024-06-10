@@ -1,0 +1,37 @@
+{% extends "system_template.html" %}
+{% block content %}
+<div class="content_area d-flex flex-column align-items-center no-select no-right-click">
+  <h2>本日の実験の中で、両腕を間に伸ばして手のひらを向かい合わせにするよう指示しました。その際に、実際にそのように体を動かしましたか？</h2>
+</div>
+
+<div class="form_area d-flex flex-column align-items-center">
+  <form action="/process" method="post" id="form" novalidate>
+
+    <div class="custom_paragraph_area">
+      <div class="rating-buttons mt-3 mb-3 d-flex justify-content-center">
+        <button type="button" class="rating-btn" data-value="いいえ">いいえ</button>
+        <button type="button" class="rating-btn" data-value="はい">はい</button>
+      </div>
+      <input type="hidden" name="Q12" id="answer" required>
+    </div>
+
+    <div class="custom_paragraph_area">
+      <button type="submit" class="btn btn-primary btn-lg custom-button">次に進む</button>
+      <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+
+{% block custom_end_of_body_area %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    handleRatingButtonClick('form', '.rating-btn', 'answer');
+  });
+
+  document.addEventListener('keydown', function (event) {
+    handleYesNoKeydown(event, '.rating-btn', 'answer');
+  });
+</script>
+{% endblock %}

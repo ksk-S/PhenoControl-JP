@@ -1,0 +1,46 @@
+{% extends "system_template.html" %}
+{% block content %}
+<div class="content_area d-flex flex-column align-items-center no-select no-right-click">
+  <h2>次に、あなたは「ハッピー・バースデー・トゥ・ユー」の曲が聞こえたら、右手を上げてくださいと指示されました。</h2>
+  <p>0〜5までの尺度で、どのくらいはっきりと音楽が聞こえましたか？0は曲が全く聞こえなかった場合、5は最高のサウンドシステムから聞こえてくるかのように、はっきりと曲が聞こえた場合を表します。</p>
+</div>
+
+<div class="form_area d-flex flex-column align-items-center">
+  <form action="/process" method="post" id="form" novalidate>
+
+    <div class="custom_paragraph_area">
+      <h2 class="no-select no-right-click">あなたの体験に対応する数字を選択してください</h2>
+      <div class="rating-buttons mt-3 mb-3 d-flex justify-content-center">
+        <span class="mt-2 no-select no-right-click">音楽は全く聞こえなかった</span>
+        <button type="button" class="rating-btn" data-value="0">0</button>
+        <button type="button" class="rating-btn" data-value="1">1</button>
+        <button type="button" class="rating-btn" data-value="2">2</button>
+        <button type="button" class="rating-btn" data-value="3">3</button>
+        <button type="button" class="rating-btn" data-value="4">4</button>
+        <button type="button" class="rating-btn" data-value="5">5</button>
+        <span class="mt-2 no-select no-right-click">音楽がはっきり聞こえた</span>
+      </div>
+      <input type="hidden" name="Q8" id="answer" required>
+    </div>
+
+    <div class="custom_paragraph_area">
+      <button type="submit" class="btn btn-primary btn-lg custom-button">次に進む</button>
+      <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
+    </div>
+
+  </form>
+</div>
+{% endblock %}
+
+
+{% block custom_end_of_body_area %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    handleRatingButtonClick('form', '.rating-btn', 'answer');
+  });
+
+  document.addEventListener('keydown', function (event) {
+    handleRatingKeydown(event, '.rating-btn', 'answer');
+  });
+</script>
+{% endblock %}
