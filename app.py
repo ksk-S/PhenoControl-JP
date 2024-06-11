@@ -3,6 +3,8 @@ import os
 from flask import Flask, session, render_template, request, redirect, url_for, jsonify, abort
 import requests
 from datetime import datetime
+from waitress import serve
+import argparse
 
 app = Flask(__name__)
 config_file = 'system.cfg'
@@ -234,5 +236,20 @@ def write_to_gsheet():
         abort(500, description=str(e))
 
 
+def main():
+    parser = argparse.ArgumentParser(description="Run the Flask application.")
+    parser.add_argument("--port", type=int, help="Port to run the server on.")
+    args = parser.parse_args()
+    
+    port = args.port if args.port else 8080  # デフォルトのポートを8080に設定
+    env = os.getenv("FLASK_ENV", "development")
+    
+    if env == "production":
+        from waitress import serve
+        serve(app, host="0.0.0.0", port=port)
+    else:
+        app.run(host="0.0.0.0", port=port, debug=True)
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    main()
