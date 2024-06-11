@@ -244,11 +244,12 @@ def main():
     port = args.port if args.port else 8080  # デフォルトのポートを8080に設定
     env = os.getenv("FLASK_ENV", "development")
     
-    if env == "production":
-        from waitress import serve
-        serve(app, host="0.0.0.0", port=port)
-    else:
+    if env == "development":
+        print("Using Flask");
         app.run(host="0.0.0.0", port=port, debug=True)
+    else:
+        print("Using Waitress server");
+        serve(app, host="0.0.0.0", port=port)
 
 
 if __name__ == '__main__':
