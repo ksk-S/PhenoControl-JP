@@ -37,7 +37,7 @@ cd PhenoControl-JP
 - ローカル環境で一時的に実行する場合には本作業は不要。
 ```sh
 # デーモン化スクリプトの実行
-setup_pcjp_service.sh
+./setup_pcjp_service.sh
 ```
 <br><br>
 
