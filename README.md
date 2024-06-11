@@ -178,6 +178,7 @@ sudo systemctl disable pcjp
 sudo rm /etc/systemd/system/pcjp
 sudo rm -r /etc/systemd/system/pcjp.service.d
 ```
+<br><br>
 
 ## 2. システムアンインストール
 - 作業ディレクトリを丸ごと削除する。
