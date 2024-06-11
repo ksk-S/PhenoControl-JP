@@ -17,6 +17,9 @@ else
     exit 1
 fi
 
+# Set PYTHONUNBUFFERED to disable buffering
+export PYTHONUNBUFFERED=1
+
 # Run the application and create a PID file
 python /home/ec2-user/PhenoControl-JP/app.py --port=$PORT &
 echo $! > $PID_FILE

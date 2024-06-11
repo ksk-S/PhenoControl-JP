@@ -1,5 +1,6 @@
 import configparser
 import os
+import sys
 from flask import Flask, session, render_template, request, redirect, url_for, jsonify, abort
 import requests
 from datetime import datetime
@@ -103,6 +104,9 @@ try:
     display_skip_button = config_data['display_skip_button']
     app_script_url = config_data['app_script_url']
     page_table = config_data['page_table']
+
+    sys.stdout.reconfigure(line_buffering=True)
+    sys.stderr.reconfigure(line_buffering=True) 
 except RuntimeError as e:
     print(f"{e}")
     exit();

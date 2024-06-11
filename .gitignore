@@ -2,3 +2,4 @@
 venv/
 app.*.pid
 *.pem
+*.log
