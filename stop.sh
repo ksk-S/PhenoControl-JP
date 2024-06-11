@@ -1,11 +1,7 @@
 #!/bin/bash
 
-# Ensure a port number is provided, default to 8080
-if [ -n "$1" ]; then
-  PORT=$1
-else
-  PORT=8080
-fi
+# Check if port number is provided from environment variable, default to 8080
+PORT=${FLASK_PORT:-8080}
 
 PID_FILE="app.${PORT}.pid"
 
