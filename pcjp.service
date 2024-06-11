@@ -1,0 +1,14 @@
+[Unit]
+Description=PhenoControl-JP
+After=network.target
+
+[Service]
+Type=simple
+ExecStartPre=/home/ec2-user/PhenoControl-JP/stop.sh
+ExecStart=/home/ec2-user/PhenoControl-JP/run.sh
+Restart=always
+User=ec2-user
+WorkingDirectory=/home/ec2-user/PhenoControl-JP
+
+[Install]
+WantedBy=multi-user.target
