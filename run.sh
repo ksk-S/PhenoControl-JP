@@ -7,22 +7,25 @@ else
   PORT=8080
 fi
 
+PID_FILE="app.${PORT}.pid"
+
 # Activate the virtual environment
-if source venv/bin/activate; then
+if source /home/ec2-user/PhenoControl-JP/venv/bin/activate; then
     echo "Virtual environment activated."
 else
     echo "Error: Failed to activate virtual environment."
     exit 1
 fi
 
-# Function to run the application
-run_app() {
-  python app.py --port=$PORT
-}
+# Run the application and create a PID file
+python /home/ec2-user/PhenoControl-JP/app.py --port=$PORT &
+echo $! > $PID_FILE
 
-# Run the application in the background
-run_app & echo $! > "app.${PORT}.pid"
-echo "Application started successfully on port $PORT."
+# Wait for the application to finish
+wait $!
 
 # Deactivate the virtual environment
 deactivate
+
+# Clean up the PID file
+rm -f $PID_FILE
