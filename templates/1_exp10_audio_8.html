@@ -3,7 +3,7 @@
 <div class="content_area d-flex flex-column align-items-center no-select no-right-click">
   <h2>音声が再生中です</h2>
   <p>（音声を注意深く聞いて、指示にしたがってください）</p>
-  <audio autoplay>
+  <audio id="audio_element" autoplay>
     <source src="/static/audio/8_remebering.mp3" type="audio/mp3">
     Your browser does not support the audio element.
   </audio>
@@ -16,6 +16,7 @@
       <button type="submit" class="btn btn-primary btn-lg custom-button" style="display:none;"></button>
       <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
   </form>
+  <button id="replay_button" class="btn btn-primary btn-lg custom-button" style="display:none;">音声を再生</button>
 </div>
 {% endblock %}
 
@@ -25,6 +26,22 @@
   document.addEventListener("DOMContentLoaded", function() {
     autoPlayAudio('form', true);
     {% if display_skip_button %}focusFirstRequiredElement(false);{% endif %}
+
+    var replayButton = document.getElementById('replay_button');
+    var audioElement = document.getElementById('audio_element');
+    var reloaded = sessionStorage.getItem('{{ page_name }}_reloaded');
+
+
+    if (reloaded) {
+      replayButton.style.display = 'block';
+    } 
+
+    replayButton.addEventListener('click', function() {
+      audioElement.play();
+    });
+
   });
+  
+  trackPageReload("{{ page_name }}");
 </script>
 {% endblock %}

@@ -112,3 +112,7 @@ p {
 .checkbox_center_area{
   text-align: center;
 }
+
+#replay_button{
+  margin-top: 30px;
+}
