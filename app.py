@@ -98,6 +98,8 @@ def debug_print(message):
 
 
 try:
+    sys.stdout.reconfigure(line_buffering=True)
+    sys.stderr.reconfigure(line_buffering=True) 
     config_data = load_config(config_file)
     app.secret_key = config_data['secret_key']
     verbose_debug_info = config_data['verbose_debug_info']
@@ -105,8 +107,6 @@ try:
     app_script_url = config_data['app_script_url']
     page_table = config_data['page_table']
 
-    sys.stdout.reconfigure(line_buffering=True)
-    sys.stderr.reconfigure(line_buffering=True) 
 except RuntimeError as e:
     print(f"{e}")
     exit();
