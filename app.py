@@ -13,10 +13,24 @@ default_page_table = [
     "system_error.html"
 ]
 
+SECRET_KEY_FILE = 'secret_key.txt'
+
+def generate_secret_key():
+    return os.urandom(24)
+
+def load_secret_key():
+    if os.path.exists(SECRET_KEY_FILE):
+        with open(SECRET_KEY_FILE, 'rb') as f:
+            return f.read()
+    else:
+        secret_key = generate_secret_key()
+        with open(SECRET_KEY_FILE, 'wb') as f:
+            f.write(secret_key)
+        return secret_key
+
 def load_config(file):
     config_data = {
         'page_table': default_page_table,
-        'secret_key': 'default_secret_key',
         'app_script_url': 'https://script.google.com/a/macros/volocitee.com/s/AKfycbxF7S-m59UCCcPKGknU1sKUCouBdC5VfDtJARhKkRhEMfPDExBVtMjVpfpsUjwtR1w2/exec',
         'verbose_debug_info': 1,
         'display_skip_button': 0
@@ -27,9 +41,6 @@ def load_config(file):
             config = configparser.ConfigParser()
             config.read(file)
             print(f"Loading {file} ...")
-
-            if 'flask' in config and 'secret_key' in config['flask']:
-                config_data['secret_key'] = config.get('flask', 'secret_key')
 
             if 'debug' in config and 'verbose_debug_info' in config['debug']:
                 if config.get('debug', 'verbose_debug_info').lower() == 'on':
@@ -101,7 +112,7 @@ try:
     sys.stdout.reconfigure(line_buffering=True)
     sys.stderr.reconfigure(line_buffering=True) 
     config_data = load_config(config_file)
-    app.secret_key = config_data['secret_key']
+    app.secret_key = load_secret_key()
     verbose_debug_info = config_data['verbose_debug_info']
     display_skip_button = config_data['display_skip_button']
     app_script_url = config_data['app_script_url']

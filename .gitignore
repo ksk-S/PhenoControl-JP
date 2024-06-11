@@ -3,3 +3,4 @@ venv/
 app.*.pid
 *.pem
 *.log
+secret_key.txt
