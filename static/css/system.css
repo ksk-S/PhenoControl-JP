@@ -1,3 +1,39 @@
+/* 縦画面の時のスタイル */
+@media only screen and (orientation: portrait) {
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #f8f9fa;
+  }
+
+  .rotate-message {
+    display: block;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+
+  .main-content {
+    display: none!IMPORTANT;
+  }
+}
+
+/* 横画面の時のスタイル */
+@media only screen and (orientation: landscape) {
+  .rotate-message {
+    display: none;
+  }
+
+  .main-content {
+    display: block;
+  }
+}
 
 .no-select {
   user-select: none;
