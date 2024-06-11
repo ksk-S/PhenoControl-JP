@@ -1,10 +1,9 @@
+from flask import Flask, session, render_template, request, redirect, url_for, jsonify, abort
+from datetime import datetime
+from waitress import serve
 import configparser
 import os
 import sys
-from flask import Flask, session, render_template, request, redirect, url_for, jsonify, abort
-import requests
-from datetime import datetime
-from waitress import serve
 import argparse
 
 app = Flask(__name__)
@@ -106,6 +105,19 @@ def debug_print(message):
         print(message)
 
 
+def is_pc(user_agent):
+    pc_agents = ['Windows NT', 'Macintosh', 'X11']
+    for agent in pc_agents:
+        if agent in user_agent:
+            return True
+    return False
+
+
+@app.before_request
+def block_non_pc():
+    user_agent = request.headers.get('User-Agent')
+    if not is_pc(user_agent):
+        return render_template('system_error.html', error_message='PCからアクセスしてください'), 500
 
 
 try:
