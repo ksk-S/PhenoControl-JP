@@ -216,9 +216,8 @@ def process():
             if key not in session['order']:
                 session['order'].append(key)
             else:
-                if key != 'id':
-                    session['order'].remove(key)
-                    session['order'].append(key)
+                session['order'].remove(key)
+                session['order'].append(key)
 
         debug_print("----------------------------")
         for key in session['order']:
