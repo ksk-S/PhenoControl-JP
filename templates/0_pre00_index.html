@@ -7,9 +7,18 @@
 
 
 <div class="form_area mt-4 d-flex flex-column align-items-center">
-  <form action="/process" method="post" id="form">
-    <button type="submit" class="btn btn-primary btn-lg custom_button">開始する</button>
-    <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
+  <form action="/process" method="post" id="form" novalidate>
+
+    <div class="custom_paragraph_area">
+      <h2 class="no-select no-right-click">プロジェクトID</h2>
+      <input type="text" class="no-spin" id="id" name="id" value="{{ id }}" required>
+    </div>
+
+    <div class="custom_paragraph_area">
+      <button type="submit" class="btn btn-primary btn-lg custom_button">開始する</button>
+      <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
+    </div>
+
   </form>
 </div>
 {% endblock %}
@@ -24,6 +33,7 @@
 
   var form = document.getElementById('form');
   form.addEventListener('submit', function() {
+    validateRequiredFields(event, "この項目は必須です。");
     sessionStorage.clear();
   });
 </script>
