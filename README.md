@@ -51,7 +51,7 @@ cd PhenoControl-JP
 ### 3-1. 動作確認
 
 - 動作確認用のGSが事前に組み込まれているので、システムが正常にインストールされているか動作確認する。下記例に基づき、それぞれの環境に応じて、ブラウザ経由でシステムにアクセスし動作確認する。
-- URLパラメーターにidを渡すことにより、実験データにプロジェクトIDを書き込むことができる。idを指定しない場合は、0が設定される。
+- URLパラメーターにidを渡すことにより、実験データにプロジェクトIDを書き込むことができる。idを指定しない場合は、0が設定される。現状は0と112のみが有効です。
 ```
 （フォーマット）
 http://{ip}:{port}/[?id={id}]
@@ -61,46 +61,31 @@ http://192.168.10.1:8080/?id=1234
 http://192.168.10.1:8080/
 http://127.0.0.1/
 ```
-- 実験を最後まで実施したら、下記動作確認用GSにアクセスし、正しくデータが書き込まれているか確認する。
-    - 音声データが長いので、system.cfg の"display_skip_button = on"に設定することにより、SKIPボタンが表示し、音声データをスキップできるようになり、動作確認を1,2分で完了することができる。変更した場合には設定を反映させるために後述のシステム再起動処理を実施すること。
+- 実験を最後まで実施したら、下記GSの「DATA」シートにアクセスし、正しくデータが書き込まれているか確認する。
+    - 音声データの再生時間が長いので、system.cfg の"display_skip_button = on"に設定することにより、SKIPボタンが表示し、音声データをスキップできるようになり、動作確認を1,2分で完了することができる。変更した場合には設定を反映させるためにシステムを再起動すること。
 https://docs.google.com/spreadsheets/d/1FEAK4VtGf6CRZmUwzNu4tnenydN20Q8GDOzYlraqn7E/edit#gid=0
 <br><br>
 
 
 ### 3-2. GS新規作成
-- 自分のGoogleアカウントで、GSを新規作成する。ファイル名は任意で良いが、シート名は必ず「DATA」とすること。
-- 新規に作成したGSのURLからGS IDをメモしておく。URLの"/d/"から次の"/"までの英数字がGS IDとなる。例として、前述の動作確認用GSのURLの場合には、**1FEAK4VtGf6CRZmUwzNu4tnenydN20Q8GDOzYlraqn7E**になる。
-- このGS IDとシート名で、GSとGASを接続する。
+1. 動作確認用の下記GSを「ファイル」＞「コピーを作成」でコピーする。GS自体のアクセス権限は運用に応じて設定する。全公開する必要はない。
+https://docs.google.com/spreadsheets/d/1FEAK4VtGf6CRZmUwzNu4tnenydN20Q8GDOzYlraqn7E/edit#gid=0
+2. 新規に作成したGSのURLからGS IDをメモしておく。URLの"/d/"から次の"/"までの英数字がGS IDとなる。例として、前述の動作確認用GSのURLの場合には、**1FEAK4VtGf6CRZmUwzNu4tnenydN20Q8GDOzYlraqn7E**になる。
+3. このGS IDとシート名で、GSとGASを接続する。
 <br><br>
 
 
 ### 3-3. GAS設定（GAS - GS間接続）
-- GSメニュー > 拡張機能 > Apps Scriptを選択し、Apps Scriptエディタを起動する。
-- ファイルの右側にあるプラスアイコンを押下し、"スクリプト"を選択し、ファイルを作成する。ファイル名は任意で構いません。
-- そのファイルに、下記コードをコピーする。
-- SpreadsheetApp.openById()の引数に、先ほどメモしたGS IDを設定する。
-```javascript
-function doPost(e) {
-  var ss = SpreadsheetApp.openById('1FEAK4VtGf6CRZmUwzNu4tnenydN20Q8GDOzYlraqn7E');// 新規GS IDに書き換える。
-  var sheet = ss.getSheetByName('DATA');
-  
-  var data = JSON.parse(e.postData.contents).data;
-  var values = data.map(function(item) {
-    return item[1]; 
-  });
-  
-  sheet.appendRow(values);
-  return ContentService.createTextOutput(JSON.stringify({"result": "success"}));
-}
-```
-- 右上の[デプロイ]ボタンを押下して、自分のアカウント、公開先は"全員"になっていることを確認し、[デプロイ]ボタンを押下する
-- その後、ダイアログが表示されるので、そこに記載されたGASのURLをコピーしておく。それを使いシステムとGASを接続する。
+1. GS内メニューで、「拡張機能」＞「Apps Script」を選択し、Apps Scriptエディタを起動する。
+2. gsID変数に先ほどメモしたGS IDをコピーする。
+3. 右上の[デプロイ]ボタンを押下して、自分のアカウント、公開先は"全員"になっていることを確認し、[デプロイ]ボタンを押下する
+4. その後、ダイアログが表示されるので、そこに記載されたGASのURLをコピーしておく。それを使いシステムとGASを接続する。
 <br><br>
 
 
 ### 3-4. システム設定（システム - GAS間接続）
-- 作業ディレクトリ直下にあるsystem.cfgをエディタで開く。
-- 前述のGAS URLを下記のapp_script_urlにコピーする。
+1. 作業ディレクトリ直下にあるsystem.cfgをエディタで開く。
+2. 前述のGAS URLを下記のapp_script_urlにコピーする。
 ```javascript
 app_script_url = https://script.google.com/a/macros/volocitee.com/s/AKfycbxF7S-m59UCCcPKGknU1sKUCouBdC5VfDtJARhKkRhEMfPDExBVtMjVpfpsUjwtR1w2/exec
 ```
@@ -109,11 +94,18 @@ app_script_url = https://script.google.com/a/macros/volocitee.com/s/AKfycbxF7S-m
 
 ## 4. システム再起動
 - 変更内容を反映させるために（設定ファイルを読み込み直すために）、後述の再起動手順に従い、システムを再起動する。
+<br><br>
+
+
+## ５． プロジェクトIDの設定
+- GSの「CONSENT_CHECK」シートで、プロジェクトIDとそれに対応する同意文をHTMLで書き込む。
+  - ここに記載のないプロジェクトIDが、ユーザーから入力された場合にはシステムエラーが表示される。
+- システムの再鼓動は不要。
 <br><br><br><br>
 
 
 # システムの使い方
-## 1. デーモン版
+## 1. デーモン版の操作方法
 ### 1-1. 起動
 - 前述のデーモン化を実施済みであれば、すでに起動されていて、またサーバー起動時にも自動起動されるようになっているので、基本的には本作業は不要。
 ```sh
@@ -143,7 +135,7 @@ sudo systemctl start pcjp
 ```
 <br><br>
 
-## 2. ローカル版 or ターミナル実行版
+## 2. ローカル版 or ターミナル実行版の操作方法
 - Macなどのローカル環境で実行する場合には、作業ディレクトリ直下にあるスクリプトで直接操作する。
 ### 2-1. 起動
 ```sh
@@ -170,6 +162,7 @@ sudo ./stop.sh
 sudo ./run.sh 5757
 ```
 <br><br><br><br>
+
 
 # アンインストール
 ## 1. デーモン化解除
