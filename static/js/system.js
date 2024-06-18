@@ -100,9 +100,18 @@ function validateRequiredFields(event, errorMessage) {
     // Check required fields
     var requiredFields = form.querySelectorAll("[required]");
     requiredFields.forEach(function (field) {
-        if (!field.value) {
-            isValid = false;
-            displayFormError(field, errorMessage, field.parentNode);
+        if (field.type === 'checkbox') {
+            if (!field.checked) {
+                isValid = false;
+                displayFormError(field, errorMessage, field.parentNode);
+            }
+        } else if (field.type === 'radio') {
+            // Radio button handling is done separately
+        } else {
+            if (!field.value) {
+                isValid = false;
+                displayFormError(field, errorMessage, field.parentNode);
+            }
         }
     });
 
