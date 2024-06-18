@@ -9,6 +9,11 @@
   <form action="/process" method="post" id="form" novalidate>
 
     <div class="custom_paragraph_area">
+      <h2 class="no-select no-right-click">プロジェクトID</h2>
+      <input type="number" class="no-spin" id="id" name="id" value="{{ id }}" required>
+    </div>
+
+    <div class="custom_paragraph_area">
       <h2 class="no-select no-right-click">あなたの年齢を教えて下さい</h2>
       <input type="number" id="age" name="age" required>
     </div>

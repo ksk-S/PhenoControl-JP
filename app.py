@@ -66,7 +66,7 @@ def load_config(file):
 
 
 def render_next_page(page_name):
-    return render_template(page_name, page_name=page_name, display_skip_button=display_skip_button)
+    return render_template(page_name, page_name=page_name, display_skip_button=display_skip_button, id=session['id'])
 
 
 def get_page_name(index):
@@ -216,8 +216,9 @@ def process():
             if key not in session['order']:
                 session['order'].append(key)
             else:
-                session['order'].remove(key)
-                session['order'].append(key)
+                if key != 'id':
+                    session['order'].remove(key)
+                    session['order'].append(key)
 
         debug_print("----------------------------")
         for key in session['order']:
