@@ -65,8 +65,8 @@ def load_config(file):
     return config_data
 
 
-def render_next_page(page_name):
-    return render_template(page_name, page_name=page_name, display_skip_button=display_skip_button, id=session['id'])
+def render_next_page(page_name, html_content):
+    return render_template(page_name, page_name=page_name, display_skip_button=display_skip_button, id=session['id'], html_content=html_content)
 
 
 def get_page_name(index):
@@ -159,7 +159,7 @@ def index():
         session['order'].append('id')
 
         page = get_page_name(get_current_page_index())
-        return render_next_page(page)
+        return render_next_page(page, "")
     except Exception as e:
         abort(500, description=str(e))
 
@@ -172,6 +172,7 @@ def process():
         current_page_name = get_page_name(current_page_index)
         dst_page_index = current_page_index + 1
         dst_page_name = get_page_name(dst_page_index)
+        html_content = ""
 
         debug_print("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         debug_print(f'method: {request.method}')
@@ -185,22 +186,7 @@ def process():
         # any requests that come via the GET method will be redirected to the original page. 
         # This is mainly to handle accesses that occur when the browser's back button is pressed.
         if request.method == 'GET':
-            return render_next_page(current_page_name)
-
-        # If the user returns to the initial page by pressing the back button and then clicks the start button from there, 
-        # an initialization process will be necessary.
-        if current_page_index == 0:
-            if 'id' in session:
-                id = session['id']
-            else:
-                id = str(000000)
-            
-            initialize_system()
-            session['id'] = id
-            session['start_time'] = datetime.now().isoformat()
-            session['order'] = []
-            session['order'].append('id')
-            session['order'].append('start_time')
+            return render_next_page(current_page_name, html_content)
 
         form_data = request.form.to_dict(flat=False)
         debug_print("Form Data Received ---------")
@@ -220,6 +206,37 @@ def process():
                     session['order'].remove(key)
                     session['order'].append(key)
 
+        if 'id' in session:
+            id = session['id']
+        else:
+            id = str(000000)
+        debug_print(f'project id: {id}')
+
+        # If the user returns to the initial page by pressing the back button and then clicks the start button from there, 
+        # an initialization process will be necessary.
+        if current_page_index == 0:            
+            initialize_system()
+            session['id'] = id
+            session['start_time'] = datetime.now().isoformat()
+            session['order'] = []
+            session['order'].append('id')
+            session['order'].append('start_time')
+
+            response = requests.get(app_script_url, params={'id': id})
+            data = response.json()
+            # debug_print(data)
+            if data['status'] == 'error':
+                raise Exception(data['message'])
+
+            html_content = data['message']
+            
+            debug_print(f'doGet {id} >>>>>>>>> {data}')
+        # debug_print('------------')
+        # debug_print(data['message'])
+        # debug_print('------------')
+
+
+
         debug_print("----------------------------")
         for key in session['order']:
             debug_print(f"{key}: {session[key]}")
@@ -227,7 +244,7 @@ def process():
 
         debug_print(f'Going to {dst_page_name} ...')
         set_page_index(dst_page_index)
-        return render_next_page(dst_page_name)
+        return render_next_page(dst_page_name, html_content)
     except Exception as e:
         abort(500, description=str(e))
 

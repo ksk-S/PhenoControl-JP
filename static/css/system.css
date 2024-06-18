@@ -44,6 +44,10 @@ p {
   color: red;
 }
 
+.custom_text_error_message {
+  text-align: center;
+}
+
 .custom_paragraph_area {
   margin-top: 50px;
 }
