@@ -158,25 +158,30 @@ function clearFormErrors() {
 }
 
 /**
- * Automatically plays audio elements and optionally submits a form when the audio ends.
+ * Automatically plays the first audio element and optionally submits a form when the audio ends.
  * @param {string} formId - The ID of the form to submit when audio ends.
  * @param {boolean} autoSubmit - Indicates whether to submit the form when audio ends.
  */
 function autoPlayAudio(formId, autoSubmit) {
-    var audios = document.querySelectorAll('audio');
-    var form = document.getElementById(formId);
-
-    audios.forEach(function(audio) {
-        // Try to play the audio
-        audio.play().catch(function(error) {
-            console.log("Auto-play was prevented: ", error);
-        });
+    return new Promise(function(resolve, reject) {
+        var audio = document.querySelector('audio');
+        var form = document.getElementById(formId);
 
         // Submit the form when the audio ends if autoSubmit is true
         audio.addEventListener('ended', function() {
             if (autoSubmit) {
                 form.submit();
             }
+            resolve();
+        });
+
+        // Try to play the audio
+        audio.play().then(function() {
+            // Audio started playing successfully
+            resolve();
+        }).catch(function(error) {
+            console.log("Auto-play was prevented: ", error);
+            reject(error); // Return the error to the caller
         });
     });
 }

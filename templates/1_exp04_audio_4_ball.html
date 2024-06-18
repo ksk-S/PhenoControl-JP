@@ -24,22 +24,28 @@
 {% block custom_end_of_body_area %}
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    autoPlayAudio('form', true);
     {% if display_skip_button %}focusFirstRequiredElement(false);{% endif %}
 
     var replayButton = document.getElementById('replay_button');
     var audioElement = document.getElementById('audio_element');
     var reloaded = sessionStorage.getItem('{{ page_name }}_reloaded');
 
-
-    if (reloaded) {
-      replayButton.style.display = 'block';
-    } 
-
     replayButton.addEventListener('click', function() {
       audioElement.play();
     });
 
+    autoPlayAudio('form', true).then(function() {
+        // Audio played successfully
+        console.log("Audio played successfully");
+    }).catch(function(error) {
+        // Auto-play was prevented or failed
+        var replayButton = document.getElementById('replay_button');
+        replayButton.style.display = 'block';
+    });
+
+    if (reloaded) {
+      replayButton.style.display = 'block';
+    } 
   });
   
   trackPageReload("{{ page_name }}");
