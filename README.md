@@ -180,6 +180,7 @@ sudo rm -r /etc/systemd/system/pcjp.service.d
 ```sh
 rm -rf PhenoControl-JP
 ```
+<br><br><br><br>
 
 # Chrome以外を利用する場合
 セキュリティ上、音声の自動再生ができないので、ブラウザ毎に対応が必要となる。
