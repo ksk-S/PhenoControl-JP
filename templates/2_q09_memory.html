@@ -1,10 +1,9 @@
 {% extends "system_template.html" %}
 {% block content %}
 <div class="content_area d-flex flex-column align-items-center no-select no-right-click">
-  <h2>次に、あなたは、あなたの左手と左腕がどれほど重く感じるかを伝えられ、そして手を上げてみるように言われました</h2>
-  <p>0から5までの尺度で、どのくらいの重さを手に感じましたか？0は全く重さを感じなかった場合、5は非常に重いもので押されているような重さを感じた場合を表しています。</p>
+  <h2>次に、「あなたは全てを思い出すことができます」と言われるまで、実験中に行ったことは何も思い出せないと言われました。</h2>
+  <p>「あなたは全てを思い出すことができます」と言われるまで、どの程度、この出来事を思い出すことが難しかったですか？0から5までの尺度でお答えください。0は普段と同じように簡単に思い出すことができたことを意味し、5はまるで記憶に空白があるかのように、思い出すのが非常に困難だったことを意味します。</p>
 </div>
-
 
 <div class="form_area d-flex flex-column align-items-center">
   <form action="/process" method="post" id="form" novalidate>
@@ -12,16 +11,16 @@
     <div class="custom_paragraph_area">
       <h2 class="no-select no-right-click">あなたの体験に対応する数字を選択してください</h2>
       <div class="rating-buttons mt-3 mb-3 d-flex justify-content-center">
-        <span class="mt-2 no-select no-right-click">普通／重さを感じなかった</span>
+        <span class="mt-2 no-select no-right-click">普通に覚えていた</span>
         <button type="button" class="rating-btn" data-value="0">0</button>
         <button type="button" class="rating-btn" data-value="1">1</button>
         <button type="button" class="rating-btn" data-value="2">2</button>
         <button type="button" class="rating-btn" data-value="3">3</button>
         <button type="button" class="rating-btn" data-value="4">4</button>
         <button type="button" class="rating-btn" data-value="5">5</button>
-        <span class="mt-2 no-select no-right-click">非常に重かった</span>
+        <span class="mt-2 no-select no-right-click">全く記憶なし</span>
       </div>
-      <input type="hidden" name="Q7" id="answer" required>
+      <input type="hidden" name="Q09" id="answer" required>
     </div>
 
     <div class="custom_paragraph_area">

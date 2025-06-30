@@ -1,32 +1,33 @@
 {% extends "system_template.html" %}
 {% block content %}
 <div class="content_area d-flex flex-column align-items-center no-select no-right-click">
-  <h2>次に、あなたは口の中で「甘い味」がすると言われました。</h2>
-  <p>0から5までの尺度で、どのくらい強く甘い味を感じましたか？0は全く感じなかった、5は強い甘みを感じたことを表しています。</p>
+  <h2>次に、あなたは右腕をまっすぐ伸ばし、硬くなっていくことを感じ、腕を曲げてみるよう指示されました。</h2>
+  <p>0から5までの尺度で、どれほどあなたの腕は硬く感じましたか？0は通常の腕と同じ硬さ、5はどんな力でも曲げられないほど硬く感じたことを表しています。</p>
 </div>
 
 <div class="form_area d-flex flex-column align-items-center">
   <form action="/process" method="post" id="form" novalidate>
-  
+
     <div class="custom_paragraph_area">
       <h2 class="no-select no-right-click">あなたの体験に対応する数字を選択してください</h2>
       <div class="rating-buttons mt-3 mb-3 d-flex justify-content-center">
-        <span class="mt-2 no-select no-right-click">全く味を感じなかった</span>
+        <span class="mt-2 no-select no-right-click">普通／硬くなかった</span>
         <button type="button" class="rating-btn" data-value="0">0</button>
         <button type="button" class="rating-btn" data-value="1">1</button>
         <button type="button" class="rating-btn" data-value="2">2</button>
         <button type="button" class="rating-btn" data-value="3">3</button>
         <button type="button" class="rating-btn" data-value="4">4</button>
         <button type="button" class="rating-btn" data-value="5">5</button>
-        <span class="mt-2 no-select no-right-click">強く甘い味を感じた</span>
+        <span class="mt-2 no-select no-right-click">非常に硬かった</span>
       </div>
-      <input type="hidden" name="Q4" id="answer" required>
+      <input type="hidden" name="Q5" id="answer" required>
     </div>
 
     <div class="custom_paragraph_area">
       <button type="submit" class="btn btn-primary btn-lg custom-button">次へ</button>
       <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
     </div>
+
   </form>
 </div>
 {% endblock %}

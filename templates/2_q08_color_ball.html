@@ -1,8 +1,8 @@
 {% extends "system_template.html" %}
 {% block content %}
 <div class="content_area d-flex flex-column align-items-center no-select no-right-click">
-  <h2>あなたはスペースバーを6回連続で押すように言われましたが、そうするように言われたことを忘れてしまうように言われました。</h2>
-  <p>スペースバーを6回押すように指示されたことを、どの程度はっきりと覚えているかを0から5までの尺度で答えてください。0はその指示を普通に覚えていたこと、5はその指示を全く覚えていなかったことを意味します。あなたの体験に対応する数字を選択してください。</p>
+  <h2>次に、あなたは目を開けてカラーボールが2つ描かれた絵を見てくださいと言われました。そして、見えたボールの色を入力するように指示されました。</h2>
+  <p>0から5までの尺度で、どの程度3つ目のボールが見えにくかったですか？0は3つのボールがはっきりと見えた場合、5は2つのボールしか見えなかった場合を表します。その間の数字は3つ目のボールがいくらか見えにくかったことを意味します。</p>
 </div>
 
 <div class="form_area d-flex flex-column align-items-center">
@@ -11,16 +11,16 @@
     <div class="custom_paragraph_area">
       <h2 class="no-select no-right-click">あなたの体験に対応する数字を選択してください</h2>
       <div class="rating-buttons mt-3 mb-3 d-flex justify-content-center">
-        <span class="mt-2 no-select no-right-click">指示を普通に覚えていた</span>
+        <span class="mt-2 no-select no-right-click">3つのボールが見えた</span>
         <button type="button" class="rating-btn" data-value="0">0</button>
         <button type="button" class="rating-btn" data-value="1">1</button>
         <button type="button" class="rating-btn" data-value="2">2</button>
         <button type="button" class="rating-btn" data-value="3">3</button>
         <button type="button" class="rating-btn" data-value="4">4</button>
         <button type="button" class="rating-btn" data-value="5">5</button>
-        <span class="mt-2 no-select no-right-click">指示を覚えていなかった</span>
+        <span class="mt-2 no-select no-right-click">2つのボールが見えた</span>
       </div>
-      <input type="hidden" name="Q11B" id="answer" required>
+      <input type="hidden" name="Q8" id="answer" required>
     </div>
 
     <div class="custom_paragraph_area">
