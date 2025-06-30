@@ -107,6 +107,9 @@ def debug_print(message):
 
 
 def is_pc(user_agent):
+    if not user_agent:          # catches None and empty string
+        return False
+
     pc_agents = ['Windows NT', 'Macintosh', 'X11']
     for agent in pc_agents:
         if agent in user_agent:
