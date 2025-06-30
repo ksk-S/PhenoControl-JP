@@ -128,10 +128,18 @@ sudo systemctl restart pcjp
 ### 1-4. ポート番号変更
 - デフォルトの8080以外を指定する場合には、env.conf内でポート番号を設定する。
 ```sh
+sudo vim /etc/systemd/system/pcjp.service.d/env.conf 
 sudo systemctl stop pcjp
-sudo vim /etc/systemd/system/pcjp.service.d/env.conf
 sudo sudo systemctl daemon-reload
 sudo systemctl start pcjp
+```
+<br><br>
+
+### 1-5. 設定ファイル変更
+- system.cfgの値を変更する場合はデーモンを再起動してください。
+```sh
+sudo vim system.cfg
+sudo systemctl restart pcjp
 ```
 <br><br>
 
