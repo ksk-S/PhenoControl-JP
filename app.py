@@ -295,7 +295,8 @@ def main():
         app.run(host="0.0.0.0", port=port, debug=True)
     else:
         print("Using Waitress server")
-        serve(app, host="0.0.0.0", port=port)
+        serve(app, host="0.0.0.0", port=port, threads=16, connection_limit=1000, channel_timeout=5)
+        # serve(app, host="0.0.0.0", port=port)
 
 
 if __name__ == '__main__':
