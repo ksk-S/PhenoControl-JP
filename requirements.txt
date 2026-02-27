@@ -13,3 +13,4 @@ requests==2.32.3
 urllib3==2.2.1
 waitress==3.0.0
 Werkzeug==3.0.3
+gunicorn
