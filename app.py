@@ -319,6 +319,11 @@ def process():
         abort(500, description=str(e))
 
 
+@app.route('/completed')
+def completed():
+    return render_template('4_completion.html')
+
+
 @app.route('/write_to_gsheet', methods=['POST'])
 def write_to_gsheet():
     try:
@@ -343,11 +348,8 @@ def write_to_gsheet():
             response = requests.post(get_app_script_url(project_id), json={"data": data})
 
             if response.status_code == 200:
-                debug_print('Redirecting to the top page...')
-                redirect_args = {'session_id': session['session_id']}
-                if project_id:
-                    redirect_args['project_id'] = project_id
-                return redirect(url_for('index', **redirect_args))
+                debug_print('Redirecting to the completion page...')
+                return redirect(url_for('completed'))
             else:
                 raise Exception(response.text)
         else:
