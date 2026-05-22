@@ -158,6 +158,30 @@ def debug_print(message):
         print(message)
 
 
+def compute_score(session_data):
+    """Compute the 9-item average score from Q1〜Q10b.
+    Equivalent to AVERAGE(Q1, Q2, Q3, AVERAGE(Q4a,Q4b), Q5, Q6, Q7, Q8, Q9, SQRT(Q10a*Q10b)).
+    Returns an empty string if any required answer is missing or non-numeric.
+    """
+    try:
+        q1 = float(session_data['Q1'])
+        q2 = float(session_data['Q2'])
+        q3 = float(session_data['Q3'])
+        q4a = float(session_data['Q4a'])
+        q4b = float(session_data['Q4b'])
+        q5 = float(session_data['Q5'])
+        q6 = float(session_data['Q6'])
+        q7 = float(session_data['Q7'])
+        q8 = float(session_data['Q8'])
+        q9 = float(session_data['Q09'])  # form field name has a leading zero
+        q10a = float(session_data['Q10a'])
+        q10b = float(session_data['Q10b'])
+        score = (q1 + q2 + q3 + (q4a + q4b) / 2 + q5 + q6 + q7 + q8 + q9 + (q10a * q10b) ** 0.5) / 9
+        return f'{score:.4f}'
+    except (KeyError, ValueError, TypeError):
+        return ''
+
+
 def is_pc(user_agent):
     if not user_agent:          # catches None and empty string
         return False
@@ -342,6 +366,9 @@ def write_to_gsheet():
             start_index = ordered_keys.index('start_time')
             ordered_keys.insert(start_index + 1, 'end_time')
             ordered_keys.insert(start_index + 2, 'duration')
+
+            session['score'] = compute_score(session)
+            ordered_keys.append('score')
 
             data = [[key, session[key]] for key in ordered_keys]
             project_id = session.get('project_id', '')
