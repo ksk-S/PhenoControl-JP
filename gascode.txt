@@ -1,0 +1,83 @@
+// PhenoControl-JP 用 Apps Script
+// DATA シートの列構成（Python 側 session['order'] の先頭から、26 列）:
+//   A: project_id     (URL パラメータ ?project_id=... から)
+//   B: project_name   (system.cfg の [project.*] セクションから引いた表示名)
+//   C: session_id     (URL パラメータ ?session_id=... から)
+//   D: start_time
+//   E: end_time
+//   F: duration
+//   G-L: user, age, gender, ball_color, comments1, comments2
+//   M-X: Q1, Q2, Q3, Q4a, Q4b, Q5, Q6, Q7, Q8, Q9, Q10a, Q10b
+//   Y: Q11
+//   Z: Q12
+//   AA: （スコア式 ARRAYFORMULA の貼り付け先、任意）
+//
+// CONSENT_CHECK シートは session_id をキーに同意 HTML を返す。
+// A 列ヘッダは「セッションID」（旧「プロジェクトID」からのリネーム）。
+
+var gsID = 'XXX';// ここを適切なGS IDに書き換える。
+var dataSheetName = 'DATA';
+var consentCheckSheetName = 'CONSENT_CHECK';
+
+function doPost(e) {
+  var ss = SpreadsheetApp.openById(gsID);
+  var sheet = ss.getSheetByName(dataSheetName);
+
+  var data = JSON.parse(e.postData.contents).data;
+  // data は [[key, value], ...] 形式。data[0]=['project_id',...], data[1]=['project_name',...], data[2]=['session_id',...]。
+  var values = data.map(function(item) {
+    return item[1];
+  });
+
+  // データを行として追加（A 列 = project_id, B 列 = project_name, C 列 = session_id）
+  sheet.appendRow(values);
+  return ContentService.createTextOutput(JSON.stringify({"result": "success"}));
+}
+
+function doGet(e) {
+  var sessionId = e.parameter.session_id;
+
+  var ss = SpreadsheetApp.openById(gsID);
+  if (!ss) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error',
+      code: 400,
+      message: 'Google Spreadsheet ID is invalid.'
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  var sheet = ss.getSheetByName(consentCheckSheetName);
+  if (!sheet) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error',
+      code: 400,
+      message: 'Sheet name is invalid.'
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  var data = getDataFromSheet(sessionId, sheet);
+  if (!data) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error',
+      code: 404,
+      message: 'Session ID is invalid.'
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({
+    status: 'success',
+    session_id: sessionId,
+    code: 200,
+    message: data
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function getDataFromSheet(sessionId, sheet) {
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] == sessionId) {
+      return data[i][1]; // Assuming the HTML content is in the second column
+    }
+  }
+  return null;
+}

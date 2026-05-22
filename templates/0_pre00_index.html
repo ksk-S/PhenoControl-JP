@@ -10,12 +10,13 @@
   <form action="/process" method="post" id="form" novalidate onsubmit="disableSubmitButton()">
 
     <div class="custom_paragraph_area">
-      <h2 class="no-select no-right-click">プロジェクトID</h2>
-      <input type="text" class="no-spin" id="id" name="id" value="{{ id }}" required>
+      <h2 class="no-select no-right-click">セッションID</h2>
+      <input type="text" class="no-spin" id="session_id" name="session_id" value="{{ session_id }}" required>
     </div>
 
     <div class="custom_paragraph_area">
       <button type="submit" class="btn btn-primary btn-lg custom_button">開始する</button>
+      <input type="hidden" name="project_id" value="{{ project_id }}"> <!-- do not delete this -->
       <input type="hidden" name="source" value="{{ page_name }}"> <!-- do not delete this -->
     </div>
 

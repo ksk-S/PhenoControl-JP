@@ -32,6 +32,7 @@ def load_config(file):
     config_data = {
         'page_table': default_page_table,
         'app_script_url': 'https://script.google.com/a/macros/volocitee.com/s/AKfycbxF7S-m59UCCcPKGknU1sKUCouBdC5VfDtJARhKkRhEMfPDExBVtMjVpfpsUjwtR1w2/exec',
+        'projects': {},
         'verbose_debug_info': 1,
         'display_skip_button': 0
     }
@@ -53,10 +54,21 @@ def load_config(file):
             if 'google' in config and 'app_script_url' in config['google']:
                 config_data['app_script_url'] = config.get('google', 'app_script_url')
 
+            for section_name in config.sections():
+                if section_name.startswith('project.'):
+                    section = config[section_name]
+                    pid = section.get('project_id', '').strip()
+                    if not pid:
+                        continue
+                    config_data['projects'][pid] = {
+                        'name': section.get('project_name', '').strip(),
+                        'url': section.get('app_script_url', '').strip(),
+                    }
+
             if 'pages' in config and 'page_table' in config['pages']:
                 page_list = config.get('pages', 'page_table').split(',')
                 config_data['page_table'] = [page.strip() for page in page_list]
-            
+
         except (configparser.NoSectionError, configparser.NoOptionError, configparser.ParsingError) as e:
             raise RuntimeError(f"Error reading config file: {e}")
     else:
@@ -65,8 +77,27 @@ def load_config(file):
     return config_data
 
 
+def get_app_script_url(project_id):
+    if project_id and project_id in projects:
+        return projects[project_id]['url']
+    return app_script_url
+
+
+def get_project_name(project_id):
+    if project_id and project_id in projects:
+        return projects[project_id]['name']
+    return ''
+
+
 def render_next_page(page_name, html_content):
-    return render_template(page_name, page_name=page_name, display_skip_button=display_skip_button, id=session['id'], html_content=html_content)
+    return render_template(
+        page_name,
+        page_name=page_name,
+        display_skip_button=display_skip_button,
+        session_id=session['session_id'],
+        project_id=session.get('project_id', ''),
+        html_content=html_content,
+    )
 
 
 def get_page_name(index):
@@ -132,6 +163,7 @@ try:
     verbose_debug_info = config_data['verbose_debug_info']
     display_skip_button = config_data['display_skip_button']
     app_script_url = config_data['app_script_url']
+    projects = config_data['projects']
     page_table = config_data['page_table']
 
 except RuntimeError as e:
@@ -153,13 +185,22 @@ def index():
         debug_print('Initializing the system ...')
         initialize_system()
 
-        id = request.args.get('id')
-        if not id:
-            id = str(000000)
-        session['id'] = id
+        session_id = request.args.get('session_id')
+        if not session_id:
+            session_id = str(000000)
+        session['session_id'] = session_id
+
+        project_id = request.args.get('project_id')
+        if not project_id:
+            project_id = ''
+        session['project_id'] = project_id
+        session['project_name'] = get_project_name(project_id)
+
         if 'order' not in session:
             session['order'] = []
-        session['order'].append('id')
+        session['order'].append('project_id')
+        session['order'].append('project_name')
+        session['order'].append('session_id')
 
         page = get_page_name(get_current_page_index())
         return render_next_page(page, "")
@@ -205,35 +246,40 @@ def process():
             if key not in session['order']:
                 session['order'].append(key)
             else:
-                if key != 'id':
+                # Keep project_id, project_name, session_id at the front of the
+                # order list so they always land in columns A, B, C of the data sheet.
+                if key not in ('session_id', 'project_id', 'project_name'):
                     session['order'].remove(key)
                     session['order'].append(key)
 
-        if 'id' in session:
-            id = session['id']
-        else:
-            id = str(000000)
-        debug_print(f'project id: {id}')
+        session_id = session.get('session_id', str(000000))
+        project_id = session.get('project_id', '')
+        debug_print(f'project_id: {project_id}')
+        debug_print(f'session_id: {session_id}')
 
-        # If the user returns to the initial page by pressing the back button and then clicks the start button from there, 
+        # If the user returns to the initial page by pressing the back button and then clicks the start button from there,
         # an initialization process will be necessary.
-        if current_page_index == 0:            
+        if current_page_index == 0:
             initialize_system()
-            session['id'] = id
+            session['session_id'] = session_id
+            session['project_id'] = project_id
+            session['project_name'] = get_project_name(project_id)
             session['start_time'] = datetime.now().isoformat()
             session['order'] = []
-            session['order'].append('id')
+            session['order'].append('project_id')
+            session['order'].append('project_name')
+            session['order'].append('session_id')
             session['order'].append('start_time')
 
-            response = requests.get(app_script_url, params={'id': id})
+            response = requests.get(get_app_script_url(project_id), params={'session_id': session_id})
             data = response.json()
             # debug_print(data)
             if data['status'] == 'error':
                 raise Exception(data['message'])
 
             html_content = data['message']
-            
-            debug_print(f'doGet {id} >>>>>>>>> {data}')
+
+            debug_print(f'doGet {session_id} >>>>>>>>> {data}')
         # debug_print('------------')
         # debug_print(data['message'])
         # debug_print('------------')
@@ -272,11 +318,15 @@ def write_to_gsheet():
             ordered_keys.insert(start_index + 2, 'duration')
 
             data = [[key, session[key]] for key in ordered_keys]
-            response = requests.post(app_script_url, json={"data": data})
+            project_id = session.get('project_id', '')
+            response = requests.post(get_app_script_url(project_id), json={"data": data})
 
             if response.status_code == 200:
                 debug_print('Redirecting to the top page...')
-                return redirect(url_for('index', id=session['id']))
+                redirect_args = {'session_id': session['session_id']}
+                if project_id:
+                    redirect_args['project_id'] = project_id
+                return redirect(url_for('index', **redirect_args))
             else:
                 raise Exception(response.text)
         else:

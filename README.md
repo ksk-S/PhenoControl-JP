@@ -51,13 +51,16 @@ cd PhenoControl-JP
 ### 3-1. 動作確認
 
 - 動作確認用のGSが事前に組み込まれているので、システムが正常にインストールされているか動作確認する。下記例に基づき、それぞれの環境に応じて、ブラウザ経由でシステムにアクセスし動作確認する。
-- URLパラメーターにidを渡すことにより、実験データにプロジェクトIDを書き込むことができる。idを指定しない場合は、0が設定される。現状は0と112のみが有効です。
+- URLパラメーターは2つある:
+  - `project_id`: 書き込み先 Spreadsheet を選択する（`system.cfg` の `[projects]` でルックアップ）。未指定または未登録の場合は `[google] app_script_url` のデフォルト GS にフォールバック。
+  - `session_id`: 旧「プロジェクトID」。CONSENT_CHECK シートの説明文を選択する。未指定の場合は0が設定される。動作確認用 GS では現状 0 と 112 のみが有効。
 ```
 （フォーマット）
-http://{ip}:{port}/[?id={id}]
+http://{ip}:{port}/[?project_id={project_id}&session_id={session_id}]
 
 （例）
-http://192.168.10.1:8080/?id=1234
+http://192.168.10.1:8080/?project_id=alpha&session_id=112
+http://192.168.10.1:8080/?session_id=1234
 http://192.168.10.1:8080/
 http://127.0.0.1/
 ```
@@ -85,10 +88,75 @@ https://docs.google.com/spreadsheets/d/1FEAK4VtGf6CRZmUwzNu4tnenydN20Q8GDOzYlraq
 
 ### 3-4. システム設定（システム - GAS間接続）
 1. 作業ディレクトリ直下にあるsystem.cfgをエディタで開く。
-2. 前述のGAS URLを下記のapp_script_urlにコピーする。
-```javascript
+2. 前述のGAS URLを下記のapp_script_urlにコピーする。これがデフォルトの書き込み先になる（URL に `project_id` がない、または `[project.*]` に未登録の場合に使われる）。
+```ini
+[google]
 app_script_url = https://script.google.com/a/macros/volocitee.com/s/AKfycbxF7S-m59UCCcPKGknU1sKUCouBdC5VfDtJARhKkRhEMfPDExBVtMjVpfpsUjwtR1w2/exec
 ```
+3. **プロジェクトごとに別の Spreadsheet を使う場合**、プロジェクトごとに `[project.<任意名>]` セクションを追加する。各セクションには `project_id` / `project_name` / `app_script_url` の 3 つを必ず指定する。各プロジェクト用に GS をコピー → GAS をデプロイ → URL をここに登録、を繰り返す。
+```ini
+[project.alpha]
+project_id = alpha
+project_name = アルファ実験
+app_script_url = https://script.google.com/macros/s/AKfycbx.../exec
+
+[project.beta]
+project_id = beta
+project_name = ベータ実験
+app_script_url = https://script.google.com/macros/s/AKfycbx.../exec
+```
+- アクセス時の URL: `http://{ip}:{port}/?project_id=alpha&session_id=112`
+- ルックアップは `project_id` フィールドの値で行われる（セクション名 `[project.alpha]` は任意のラベル扱い、ただし `project_id` と揃えると分かりやすい）。
+- `project_id` が未指定 / 未登録 → `[google] app_script_url` のデフォルトにフォールバック（`project_name` は空文字として GS に書かれる）。
+<br><br>
+
+
+### 3-5. GAS スクリプト側の対応（変数名のリネーム）
+- 本システムは Apps Script に対して `session_id` というクエリパラメータ名でリクエストを送るように変更されている（旧 `id` からのリネーム）。**コピー元の動作確認用 GS の Apps Script (Code.gs)** で受け側を `session_id` に修正する必要がある。サンプルは作業ディレクトリ直下の [gascode.txt](gascode.txt) を参照。
+- 例（`doGet` の冒頭）:
+```javascript
+function doGet(e) {
+  var sessionId = e.parameter.session_id;   // 旧: e.parameter.id
+  // CONSENT_CHECK シートを sessionId で引いて同意 HTML を返す
+  ...
+}
+```
+- POST 側 (`doPost`) は変更不要（行データはそのまま追記）。
+- **CONSENT_CHECK シートの A 列ヘッダも「プロジェクトID」→「セッションID」に変更**しておくと整合が取れる。GAS は `data[i][0]` で値を引いているだけなので、ヘッダ文字列の変更は動作に影響しない。
+<br><br>
+
+
+### 3-6. DATA シートの列レイアウト
+- 本システムが GAS に送信するデータの列順は以下の通り（26 列）:
+
+| 列 | 内容 | 列 | 内容 |
+|---|---|---|---|
+| A | project_id   | N | Q2 |
+| B | project_name | O | Q3 |
+| C | session_id   | P | Q4a |
+| D | start_time   | Q | Q4b |
+| E | end_time     | R | Q5 |
+| F | duration     | S | Q6 |
+| G | user         | T | Q7 |
+| H | age          | U | Q8 |
+| I | gender       | V | Q9 |
+| J | ball_color   | W | Q10a |
+| K | comments1    | X | Q10b |
+| L | comments2    | Y | Q11 |
+| M | Q1           | Z | Q12 |
+| | | **AA** | **（スコア式の貼り付け先）** |
+
+- 1 行目には対応するヘッダ（`project_id`, `project_name`, `session_id`, ... , `Q12`）を手動で入力しておく。
+- **既存 GS でデータがある場合**: A 列に「project_id」、B 列に「project_name」のヘッダを挿入し、既存行の値を埋める（不明なら空欄でも可）。データ列が 2 つ右にずれる形になる。
+<br><br>
+
+
+### 3-7. スコア列の追加
+- GS の DATA シートでアンケート回答（M〜X 列の Q1〜Q10b）からスコアを自動計算したい場合は、**AA1 セル**（Q12 の次列）に以下の数式を貼り付ける。ARRAYFORMULA で全行に自動展開される。
+```
+=ARRAYFORMULA(IF(ROW(M:M)=1, "score", IF(M:M="", "", (M:M + N:N + O:O + (P:P+Q:Q)/2 + R:R + S:S + T:T + U:U + V:V + SQRT(W:W*X:X)) / 9)))
+```
+- 元の式 `=AVERAGE(K2, L2, M2, AVERAGE(N2,O2), P2, Q2, R2, S2, T2, SQRT(U2*V2))` を `project_id` / `project_name` 列追加に伴い K〜V → M〜X にシフトさせたもの（9 項目の平均）。Q11, Q12 (Y, Z 列) はスコアには含まれない。
 <br><br>
 
 
@@ -97,10 +165,10 @@ app_script_url = https://script.google.com/a/macros/volocitee.com/s/AKfycbxF7S-m
 <br><br>
 
 
-## ５． プロジェクトIDの設定
-- GSの「CONSENT_CHECK」シートで、プロジェクトIDとそれに対応する同意文をHTMLで書き込む。
-  - ここに記載のないプロジェクトIDが、ユーザーから入力された場合にはシステムエラーが表示される。
-- システムの再鼓動は不要。
+## ５． セッションIDの設定
+- GSの「CONSENT_CHECK」シートで、セッションID（旧プロジェクトID）とそれに対応する同意文をHTMLで書き込む。同一プロジェクト（同一 GS）内でも複数の説明 HTML を使い分けられる。
+  - ここに記載のないセッションIDが、ユーザーから入力された場合にはシステムエラーが表示される。
+- システムの再起動は不要。
 <br><br><br><br>
 
 
