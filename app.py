@@ -39,7 +39,7 @@ def load_config(file):
 
     if os.path.exists(file):
         try:
-            config = configparser.ConfigParser()
+            config = configparser.ConfigParser(inline_comment_prefixes=('#', ';'))
             config.read(file)
             print(f"Loading {file} ...")
 
