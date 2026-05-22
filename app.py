@@ -43,13 +43,11 @@ def load_config(file):
             config.read(file)
             print(f"Loading {file} ...")
 
-            if 'debug' in config and 'verbose_debug_info' in config['debug']:
-                if config.get('debug', 'verbose_debug_info').lower() == 'on':
-                    config_data['verbose_debug_info'] = 1
-
-            if 'debug' in config and 'display_skip_button' in config['debug']:
-                if config.get('debug', 'display_skip_button').lower() == 'on':
-                    config_data['display_skip_button'] = 1
+            if 'debug' in config:
+                if 'verbose_debug_info' in config['debug']:
+                    config_data['verbose_debug_info'] = 1 if config.get('debug', 'verbose_debug_info').strip().lower() == 'on' else 0
+                if 'display_skip_button' in config['debug']:
+                    config_data['display_skip_button'] = 1 if config.get('debug', 'display_skip_button').strip().lower() == 'on' else 0
 
             if 'google' in config and 'app_script_url' in config['google']:
                 config_data['app_script_url'] = config.get('google', 'app_script_url')
@@ -60,10 +58,16 @@ def load_config(file):
                     pid = section.get('project_id', '').strip()
                     if not pid:
                         continue
-                    config_data['projects'][pid] = {
+                    proj = {
                         'name': section.get('project_name', '').strip(),
                         'url': section.get('app_script_url', '').strip(),
                     }
+                    # Optional per-project debug overrides; absence inherits [debug] global.
+                    if 'verbose_debug_info' in section:
+                        proj['verbose_debug_info'] = 1 if section.get('verbose_debug_info', '').strip().lower() == 'on' else 0
+                    if 'display_skip_button' in section:
+                        proj['display_skip_button'] = 1 if section.get('display_skip_button', '').strip().lower() == 'on' else 0
+                    config_data['projects'][pid] = proj
 
             if 'pages' in config and 'page_table' in config['pages']:
                 page_list = config.get('pages', 'page_table').split(',')
@@ -89,13 +93,26 @@ def get_project_name(project_id):
     return ''
 
 
+def get_verbose_debug_info(project_id):
+    if project_id and project_id in projects and 'verbose_debug_info' in projects[project_id]:
+        return projects[project_id]['verbose_debug_info']
+    return verbose_debug_info
+
+
+def get_display_skip_button(project_id):
+    if project_id and project_id in projects and 'display_skip_button' in projects[project_id]:
+        return projects[project_id]['display_skip_button']
+    return display_skip_button
+
+
 def render_next_page(page_name, html_content):
+    project_id = session.get('project_id', '')
     return render_template(
         page_name,
         page_name=page_name,
-        display_skip_button=display_skip_button,
+        display_skip_button=get_display_skip_button(project_id),
         session_id=session['session_id'],
-        project_id=session.get('project_id', ''),
+        project_id=project_id,
         html_content=html_content,
     )
 
@@ -133,7 +150,11 @@ def initialize_system():
 
 
 def debug_print(message):
-    if verbose_debug_info:
+    try:
+        pid = session.get('project_id', '')
+    except RuntimeError:
+        pid = ''
+    if get_verbose_debug_info(pid):
         print(message)
 
 
