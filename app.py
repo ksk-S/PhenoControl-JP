@@ -40,7 +40,7 @@ def load_config(file):
     if os.path.exists(file):
         try:
             config = configparser.ConfigParser(inline_comment_prefixes=('#', ';'))
-            config.read(file)
+            config.read(file, encoding='utf-8')
             print(f"Loading {file} ...")
 
             if 'debug' in config:
@@ -113,6 +113,7 @@ def render_next_page(page_name, html_content):
         display_skip_button=get_display_skip_button(project_id),
         session_id=session['session_id'],
         project_id=project_id,
+        user_id=session.get('user_id', ''),
         html_content=html_content,
     )
 
@@ -241,6 +242,11 @@ def index():
         session['project_id'] = project_id
         session['project_name'] = get_project_name(project_id)
 
+        user_id = request.args.get('userId')
+        if user_id:
+            session['user_id'] = user_id
+        debug_print(f'user_id: {user_id}')
+
         if 'order' not in session:
             session['order'] = []
         session['order'].append('project_id')
@@ -299,8 +305,10 @@ def process():
 
         session_id = session.get('session_id', str(000000))
         project_id = session.get('project_id', '')
+        user_id = session.get('user_id')
         debug_print(f'project_id: {project_id}')
         debug_print(f'session_id: {session_id}')
+        debug_print(f'user_id: {user_id}')
 
         # If the user returns to the initial page by pressing the back button and then clicks the start button from there,
         # an initialization process will be necessary.
@@ -309,6 +317,8 @@ def process():
             session['session_id'] = session_id
             session['project_id'] = project_id
             session['project_name'] = get_project_name(project_id)
+            if user_id:
+                session['user_id'] = user_id
             session['start_time'] = datetime.now().isoformat()
             session['order'] = []
             session['order'].append('project_id')

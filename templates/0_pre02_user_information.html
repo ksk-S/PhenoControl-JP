@@ -9,8 +9,13 @@
   <form action="/process" method="post" id="form" novalidate>
 
     <div class="custom_paragraph_area">
+      {% if user_id %}
+      <h2 class="no-select no-right-click">あなたのユーザーID</h2>
+      <input type="text" class="no-spin inactive_input" id="user" name="user" value="{{ user_id }}" readonly tabindex="-1">
+      {% else %}
       <h2 class="no-select no-right-click">ユーザーIDを教えて下さい</h2>
       <input type="text" class="no-spin" id="user" name="user" required>
+      {% endif %}
     </div>
 
     <div class="custom_paragraph_area">

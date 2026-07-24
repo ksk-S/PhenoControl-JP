@@ -126,3 +126,9 @@ p {
     margin: 0;
     -moz-appearance:textfield;
 }
+
+.inactive_input {
+    background-color: #e9ecef;
+    color: #6c757d;
+    pointer-events: none;
+}
